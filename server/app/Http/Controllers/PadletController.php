@@ -28,22 +28,22 @@ class PadletController extends Controller
     //wir fragen hier nach allen Padlets wo der Wert der Variable private, gleich
     //dem Wert der Variable des Padlets ist. ausgegeben soll das json Objekt mit den with-Parametern
     //werden und es soll nur das erste angezeigt werden
-    /*
-     * wenn ein Ergebnis vorhanden ist, soll das ausgegeben werden und wenn nicht,
+    /* wenn ein Ergebnis vorhanden ist, soll das ausgegeben werden und wenn nicht,
      * dann soll nichts ausgegeben werden (einzeiliges if-else)
-
+     * wird nicht genutzt
     public function showprivateonly(bool $private): JsonResponse{
         $padlet = Padlet::where('private', $private)->with(['eintrags'])->first();
         return $padlet != null ? response()->json($padlet,200) : response()->json(null,200);
     }
 
     //check, obs ein Padlet mit dem Namen gibt, gib true/False zurück
+    //wird nicht genutzt
     public function checkname(string $name){
         $padlet = Padlet::where('name', $name)->first();
         return $padlet != null ? response()->json(true,200) : response()->json(false,200);
     }
 
-    //geht noch ned glaub i
+    //wird nicht genutzt
     public function findbysearchterm(string $searchTerm):JsonResponse {
         $padlets = Padlet::with(['users', 'eintrags'])
             ->where('name', 'LIKE', '%'.$searchTerm.'%')
@@ -58,7 +58,7 @@ class PadletController extends Controller
         return response()->json($padlets,200);
     }*/
 
-    //kopiert von Doku - Aufzeichnung ohne Ton
+
     //create new Padlet
 
     public function save(Request $request) : JsonResponse {
@@ -142,6 +142,7 @@ class PadletController extends Controller
                 DB::commit();
                 $padlet1 = Padlet::with(['users', 'eintrags'])
                     ->where('name', $name)->first();
+
                 //gültige https response returnen
                 return response()->json($padlet1, 201);
             }
