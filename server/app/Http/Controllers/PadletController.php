@@ -15,14 +15,18 @@ class PadletController extends Controller
     {
         /*
          * alle Padlets und Beziehungen eager laden: alles gleich laden (auch Daten von Detailansicht)
+         * jetzt sollen statt Views JSON-Daten ausgeliefert werden..
+         * geh ins Padlet-Model (da sind update &so)
+         *  und nimm alle Beziehungen mit
          */
         $padlets = Padlet::with(['user','eintrags'])->get();
         return response()->json($padlets,200);
     }
 
-    public function detail(int $id){
-        $padlet = Padlet::where('id',$id)->first();
-        return $padlet != null ? response()->json($padlet,200) : response()->json(null,200);
+    public function detail(int $id): JsonResponse
+    {
+        $padlet = Padlet::with(['user', 'eintrags'])->find($id);
+        return $padlet != null ? response()->json($padlet, 200) : response()->json(null, 200);
     }
 
     //wir fragen hier nach allen Padlets wo der Wert der Variable private, gleich
@@ -61,7 +65,7 @@ class PadletController extends Controller
 
     //create new Padlet
 
-    public function save(Request $request) : JsonResponse {
+    /*public function save(Request $request) : JsonResponse {
         //parsen, damit die Daten(typen) zsmpassen
         $request = $this->parseRequest($request);
         return response()->json($request, 200);
@@ -100,6 +104,46 @@ class PadletController extends Controller
             return response()->json("Padlet konnte leider nicht gespeichert werden: ". $e->getMessage(), 420);
         }
     }
+*/
+    public function save(Request $request) : JsonResponse {
+        //parsen, damit die Daten(typen) zsmpassen
+        $request = $this->parseRequest($request);
+
+        //Transactions: brauchn wir, wenn wir in mehreren Tabellen Zustandsänderungen machen
+        //wenn irgendwas nicht durchgeht (ein Eintrag zb), bricht das gesamte SQL Statement ab
+        DB::beginTransaction();
+        try {
+            $padlet = Padlet::create($request->all());
+
+            //Einträge speichern
+            if (isset($request['eintrags']) && is_array ($request['eintrags'])) {
+                foreach ($request['eintrags'] as $eint){
+                    $eintrag =
+                        //firstOrNew: falls es den Eintrag schon geben sollte, wird er halt zugewiesen, sonst
+                        //im Normalfall einfach neu erstellt
+                        Eintrag::firstOrNew(['text'=>$eint['text']]);
+
+                    $padlet->eintrags()->save($eintrag);
+                }
+            }
+            //user speichern
+            if (isset($request['users']) && is_array ($request['users'])) {
+                foreach ($request['users'] as $use){
+                    $user =
+                        User::firstOrNew(['name'=>$use['name'], 'email'=>$use['email'],'password'=>$use['password']]);
+                    $padlet->users()->save($user);
+                }
+            }
+            DB::commit();
+            //gültige http response returnen
+            return response()->json($padlet, 201);
+        }
+        catch  (\Exception $e){
+            //rollback all queries
+            DB::rollBack();
+            return response()->json("Padlet konnte leider nicht gespeichert werden: ". $e->getMessage(), 420);
+        }
+    }
 
     //modify/convert values if needed
     private function parseRequest(Request $request) : Request {
@@ -115,7 +159,7 @@ class PadletController extends Controller
         //zuerst schauma, obs das Padlet überhaupt gibt (sonst kann man schlecht updaten)
         try {
             $padlet = Padlet::with(['users', 'eintrags'])
-                ->where('name', $name)->first();
+                ->where('id', $name)->first();
             if($padlet != null) {
                 $request = $this->parseRequest($request);
                 $padlet->update($request->all());
@@ -136,6 +180,8 @@ class PadletController extends Controller
                         array_push($ids,$use['id']);
                     }
                 }
+
+                //sync=kombiniertes attach/detach
                 $padlet->users()->sync($ids);
                 $padlet->save();
 

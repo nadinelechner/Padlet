@@ -12,6 +12,9 @@ class Padlet extends Model
 {
     use HasFactory;
 
+    //functions, die der Controller brauchen könnte sind automatisch da (update zb)
+    //Model gibts dann wieder an Controller weiter
+
     /*primary key, created_at etc werden eh automatisch befüllt
     hier gib ich an, welche Felder ich von außen befüllen darf, fillable gibt whitelist an
     guarded würd blacklist angeben*/

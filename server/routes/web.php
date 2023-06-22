@@ -17,7 +17,7 @@ use App\Http\Controllers\PadletController;
 (wenn in der View derselbe name benutzt wird) ist: compact('name'), hier haben wir jetz schon
 Zugriff auf die DB-Tabelle padlets*/
 
-//wenn wer auf die Route-URL kommt, soll er auf die BookController Klasse kommen
+//wenn wer auf die Route-URL kommt, soll er auf die PadletController Klasse kommen
 Route::get('/', [PadletController::class,'index']);
 
 /*generelle Listenansicht, auskommentiert, weil wir das jetzt über Model machen und nicht mehr hardkodiert*/

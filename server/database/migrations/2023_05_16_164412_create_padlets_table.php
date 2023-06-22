@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->boolean('private');
-            //?
             $table->integer('user_id');
             $table->dateTime('erstellungsdatum');
             $table->timestamps();

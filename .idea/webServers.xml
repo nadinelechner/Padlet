@@ -3,7 +3,7 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="4edde880-9ca5-427a-bc94-1d2cea230887" name="Hetzner1" url="http://padlet.s2010456019.student.kwmhgb.at/">
-        <fileTransfer>
+        <fileTransfer rootFolder="/usr/home/sstud293/public_html/" accessType="SFTP" host="dedi50.your-server.de" port="222" sshConfigId="b6c0bea8-2bb0-4488-9204-cbe7e026fbfa" sshConfig="sstud293@dedi50.your-server.de:222 password">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

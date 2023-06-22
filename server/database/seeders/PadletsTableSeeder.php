@@ -29,7 +29,7 @@ class PadletsTableSeeder extends Seeder
         $padlet1->erstellungsdatum = new DateTime();
         $padlet1->save();
 
-        //M:N scheiße
+        //M:N
         $users = User::all()->pluck("id");
         $padlet1->user()->sync($users);
 
@@ -45,10 +45,7 @@ class PadletsTableSeeder extends Seeder
         //Eintrag ohne Padlet kann nicht gespeichert werden, deswegen Reihenfolge wichtig
         //$padlet1->save();
 
-
-
-
-        //OLD
+        //OLD-----------------------------------------------------
         /*macht man dann später mit Model,
         aber hier wird quasi ein zufälliges Padlet erstellt (mit Ausführen von db:seed dann
         DB::table('padlets')->insert([
